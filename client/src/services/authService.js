@@ -1,10 +1,11 @@
-import api from './api';
+import api from './axiosInstance';
+import { apiConfig } from './apiConfig';
 
 export const authService = {
   // User login
   login: async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post(apiConfig.authApi.login, { email, password });
       const { token, user } = response.data;
       
       // Store token and user data in localStorage
@@ -20,7 +21,7 @@ export const authService = {
   // User registration
   register: async (userData) => {
     try {
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post(apiConfig.authApi.register, userData);
       const { token, user } = response.data;
       
       // Store token and user data in localStorage
@@ -58,7 +59,7 @@ export const authService = {
   // Update user profile
   updateProfile: async (userData) => {
     try {
-      const response = await api.put('/auth/profile', userData);
+      const response = await api.put(apiConfig.authApi.updateProfile, userData);
       const { user } = response.data;
       
       // Update stored user data
@@ -73,7 +74,7 @@ export const authService = {
   // Change password
   changePassword: async (currentPassword, newPassword) => {
     try {
-      const response = await api.put('/auth/password', {
+      const response = await api.put(apiConfig.authApi.changePassword, {
         currentPassword,
         newPassword
       });
@@ -86,7 +87,7 @@ export const authService = {
   // Forgot password
   forgotPassword: async (email) => {
     try {
-      const response = await api.post('/auth/forgot-password', { email });
+      const response = await api.post(apiConfig.authApi.forgotPassword, { email });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to send reset email');
@@ -96,7 +97,7 @@ export const authService = {
   // Reset password
   resetPassword: async (token, newPassword) => {
     try {
-      const response = await api.post('/auth/reset-password', {
+      const response = await api.post(apiConfig.authApi.resetPassword, {
         token,
         newPassword
       });
@@ -109,7 +110,7 @@ export const authService = {
   // Verify email
   verifyEmail: async (token) => {
     try {
-      const response = await api.post('/auth/verify-email', { token });
+      const response = await api.post(apiConfig.authApi.verifyEmail, { token });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to verify email');

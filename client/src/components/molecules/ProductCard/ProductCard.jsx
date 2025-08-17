@@ -24,13 +24,12 @@ const ProductCard = ({
   className = ''
 }) => {
   const {
-    _id,
     name,
     price,
     originalPrice,
     images,
-    rating,
-    numReviews,
+    ratings,
+    numOfReviews,
     discount,
     badge
   } = product;
@@ -55,7 +54,7 @@ const ProductCard = ({
     <Card className={className} onClick={onViewDetails}>
       <ImageContainer>
         <ProductImage 
-          src={images?.[0] || '/placeholder-product.jpg'} 
+          src={images?.[0]?.url || '/placeholder-product.jpg'} 
           alt={name}
           onError={(e) => {
             e.target.src = '/placeholder-product.jpg';
@@ -79,9 +78,9 @@ const ProductCard = ({
 
         <RatingContainer>
           <Stars>
-            {renderStars(rating || 0)}
+            {renderStars(ratings || 0)}
           </Stars>
-          <RatingText>({numReviews || 0})</RatingText>
+          <RatingText>({numOfReviews || 0})</RatingText>
         </RatingContainer>
 
         <Actions onClick={(e) => e.stopPropagation()}>

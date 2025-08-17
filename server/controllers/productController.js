@@ -1,33 +1,243 @@
 const Product = require('../models/Product');
 const APIFeatures = require('../utils/apiFeatures');
+const User = require('../models/User');
+
 
 // Get all products => /api/products
 exports.getProducts = async (req, res) => {
   try {
-    const resPerPage = 8;
-    const productsCount = await Product.countDocuments();
+    const {
+      page = 1,
+      limit = 12,
+      category,
+      brand,
+      minPrice,
+      maxPrice,
+      rating,
+      sortBy = 'newest',
+      search
+    } = req.query;
 
-    const apiFeatures = new APIFeatures(Product.find(), req.query)
-      .search()
-      .filter();
+    // Build filter object
+    const filter = {};
 
-    let products = await apiFeatures.query;
-    let filteredProductsCount = products.length;
+    // Category filter
+    if (category) {
+      filter.category = category;
+    }
 
-    apiFeatures.pagination(resPerPage);
-    products = await apiFeatures.query.clone();
+    // Brand filter
+    if (brand) {
+      filter.brand = brand;
+    }
+
+    // Price range filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    // Rating filter
+    if (rating) {
+      filter.ratings = { $gte: Number(rating) };
+    }
+
+    // Search filter
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { brand: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Build sort object
+    let sort = {};
+    switch (sortBy) {
+      case 'newest':
+        sort = { createdAt: -1 };
+        break;
+      case 'oldest':
+        sort = { createdAt: 1 };
+        break;
+      case 'price-low':
+        sort = { price: 1 };
+        break;
+      case 'price-high':
+        sort = { price: -1 };
+        break;
+      case 'rating':
+        sort = { ratings: -1 };
+        break;
+      case 'name':
+        sort = { name: 1 };
+        break;
+      default:
+        sort = { createdAt: -1 };
+    }
+
+    // Calculate pagination
+    const currentPage = Number(page);
+    const itemsPerPage = Number(limit);
+    const skip = (currentPage - 1) * itemsPerPage;
+
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments(filter);
+
+    // Get products with filters, sorting, and pagination
+    const products = await Product.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(itemsPerPage)
+      .populate('user', 'name');
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
     res.status(200).json({
       success: true,
-      productsCount,
-      resPerPage,
-      filteredProductsCount,
-      products
+      products,
+      totalProducts,
+      totalPages,
+      currentPage,
+      itemsPerPage,
+      hasNextPage: currentPage < totalPages,
+      hasPrevPage: currentPage > 1
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Error fetching products',
+      error: error.message
+    });
+  }
+};
+
+// Search products => /api/products/search
+exports.searchProducts = async (req, res) => {
+  try {
+    const { q: searchTerm, ...otherParams } = req.query;
+    
+    if (!searchTerm) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search term is required'
+      });
+    }
+
+    // Use the same logic as getProducts but with search term
+    const params = { ...otherParams, search: searchTerm };
+    req.query = params;
+    
+    // Reuse getProducts logic
+    return exports.getProducts(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error searching products',
+      error: error.message
+    });
+  }
+};
+
+// Get product categories => /api/products/categories
+exports.getCategories = async (req, res) => {
+  try {
+    const categories = await Product.distinct('category');
+    
+    res.status(200).json({
+      success: true,
+      categories: categories.sort()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching categories',
+      error: error.message
+    });
+  }
+};
+
+// Get product brands => /api/products/brands
+exports.getBrands = async (req, res) => {
+  try {
+    const brands = await Product.distinct('brand');
+    
+    res.status(200).json({
+      success: true,
+      brands: brands.sort()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching brands',
+      error: error.message
+    });
+  }
+};
+
+// Get featured products => /api/products/featured
+exports.getFeaturedProducts = async (req, res) => {
+  try {
+    const { limit = 8 } = req.query;
+    
+    const products = await Product.find({ ratings: { $gte: 4 } })
+      .sort({ ratings: -1, numOfReviews: -1 })
+      .limit(Number(limit))
+      .populate('user', 'name');
+
+    res.status(200).json({
+      success: true,
+      products
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching featured products',
+      error: error.message
+    });
+  }
+};
+
+// Get related products => /api/products/:id/related
+exports.getRelatedProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit = 4 } = req.query;
+    
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    const relatedProducts = await Product.find({
+      $and: [
+        { _id: { $ne: id } },
+        {
+          $or: [
+            { category: product.category },
+            { brand: product.brand }
+          ]
+        }
+      ]
+    })
+      .sort({ ratings: -1 })
+      .limit(Number(limit))
+      .populate('user', 'name');
+
+    res.status(200).json({
+      success: true,
+      products: relatedProducts
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching related products',
       error: error.message
     });
   }
