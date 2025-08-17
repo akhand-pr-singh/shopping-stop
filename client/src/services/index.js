@@ -1,4 +1,5 @@
-export { default as api } from './api';
+export { default as api } from './axiosInstance';
+export { apiConfig } from './apiConfig';
 export { default as productService } from './productService';
 export { default as cartService } from './cartService';
 export { default as authService } from './authService';

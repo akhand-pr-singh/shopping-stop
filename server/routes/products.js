@@ -3,6 +3,11 @@ const router = express.Router();
 
 const {
   getProducts,
+  searchProducts,
+  getCategories,
+  getBrands,
+  getFeaturedProducts,
+  getRelatedProducts,
   newProduct,
   getSingleProduct,
   updateProduct,
@@ -13,9 +18,34 @@ const {
 } = require('../controllers/productController');
 
 // @route   GET /api/products
-// @desc    Get all products
+// @desc    Get all products with filters and pagination
 // @access  Public
 router.route('/').get(getProducts);
+
+// @route   GET /api/products/search
+// @desc    Search products
+// @access  Public
+router.route('/search').get(searchProducts);
+
+// @route   GET /api/products/categories
+// @desc    Get all product categories
+// @access  Public
+router.route('/categories').get(getCategories);
+
+// @route   GET /api/products/brands
+// @desc    Get all product brands
+// @access  Public
+router.route('/brands').get(getBrands);
+
+// @route   GET /api/products/featured
+// @desc    Get featured products
+// @access  Public
+router.route('/featured').get(getFeaturedProducts);
+
+// @route   GET /api/products/:id/related
+// @desc    Get related products
+// @access  Public
+router.route('/:id/related').get(getRelatedProducts);
 
 // @route   GET /api/products/:id
 // @desc    Get single product

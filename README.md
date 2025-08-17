@@ -114,7 +114,7 @@ shopping-stop/
 ## Development
 
 ### Backend Development
-- The server runs on `http://localhost:5000`
+- The server runs on `http://localhost:8080`
 - API documentation will be available at `/api/docs`
 - Use `npm run dev` for development with auto-reload
 

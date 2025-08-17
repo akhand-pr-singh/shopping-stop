@@ -1,10 +1,11 @@
-import api from './api';
+import api from './axiosInstance';
+import { apiConfig } from './apiConfig';
 
 export const productService = {
   // Get all products with filters and pagination
   getProducts: async (params = {}) => {
     try {
-      const response = await api.get('/products', { params });
+      const response = await api.get(apiConfig.productApi.getProducts, { params });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch products');
@@ -14,7 +15,7 @@ export const productService = {
   // Get single product by ID
   getProduct: async (productId) => {
     try {
-      const response = await api.get(`/products/${productId}`);
+      const response = await api.get(apiConfig.productApi.getProduct(productId));
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch product');
@@ -24,7 +25,7 @@ export const productService = {
   // Get product categories
   getCategories: async () => {
     try {
-      const response = await api.get('/products/categories');
+      const response = await api.get(apiConfig.productApi.getCategories);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch categories');
@@ -34,7 +35,7 @@ export const productService = {
   // Get product brands
   getBrands: async () => {
     try {
-      const response = await api.get('/products/brands');
+      const response = await api.get(apiConfig.productApi.getBrands);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch brands');
@@ -44,7 +45,7 @@ export const productService = {
   // Search products
   searchProducts: async (searchTerm, params = {}) => {
     try {
-      const response = await api.get('/products/search', {
+      const response = await api.get(apiConfig.productApi.searchProducts, {
         params: { q: searchTerm, ...params }
       });
       return response.data;
@@ -56,7 +57,7 @@ export const productService = {
   // Get product reviews
   getProductReviews: async (productId, params = {}) => {
     try {
-      const response = await api.get(`/products/${productId}/reviews`, { params });
+      const response = await api.get(apiConfig.productApi.getProductReviews(productId), { params });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch reviews');
@@ -66,7 +67,7 @@ export const productService = {
   // Create product review (requires authentication)
   createProductReview: async (productId, reviewData) => {
     try {
-      const response = await api.post(`/products/${productId}/reviews`, reviewData);
+      const response = await api.post(apiConfig.productApi.createProductReview(productId), reviewData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to create review');
@@ -76,7 +77,7 @@ export const productService = {
   // Get featured products
   getFeaturedProducts: async (limit = 8) => {
     try {
-      const response = await api.get('/products/featured', { params: { limit } });
+      const response = await api.get(apiConfig.productApi.getFeaturedProducts, { params: { limit } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch featured products');
@@ -86,7 +87,7 @@ export const productService = {
   // Get related products
   getRelatedProducts: async (productId, limit = 4) => {
     try {
-      const response = await api.get(`/products/${productId}/related`, { params: { limit } });
+      const response = await api.get(apiConfig.productApi.getRelatedProducts(productId), { params: { limit } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch related products');

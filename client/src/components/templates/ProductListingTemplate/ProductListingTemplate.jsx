@@ -254,6 +254,9 @@ const ProductListingTemplate = ({
           <ProductCard
             key={product._id}
             product={product}
+            images={product.images}
+            rating={product.ratings}
+            numReviews={product.numOfReviews}
             onAddToCart={() => onAddToCart?.(product)}
             onViewDetails={() => onViewProduct?.(product)}
           />

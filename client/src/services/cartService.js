@@ -1,10 +1,11 @@
-import api from './api';
+import api from './axiosInstance';
+import { apiConfig } from './apiConfig';
 
 export const cartService = {
   // Get user's cart
   getCart: async () => {
     try {
-      const response = await api.get('/cart');
+      const response = await api.get(apiConfig.cartApi.getCart);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch cart');
@@ -14,7 +15,7 @@ export const cartService = {
   // Add item to cart
   addToCart: async (productId, quantity = 1) => {
     try {
-      const response = await api.post('/cart/items', { productId, quantity });
+      const response = await api.post(apiConfig.cartApi.addToCart, { productId, quantity });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to add item to cart');
@@ -24,7 +25,7 @@ export const cartService = {
   // Update cart item quantity
   updateCartItem: async (itemId, quantity) => {
     try {
-      const response = await api.put(`/cart/items/${itemId}`, { quantity });
+      const response = await api.put(apiConfig.cartApi.updateCartItem(itemId), { quantity });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to update cart item');
@@ -34,7 +35,7 @@ export const cartService = {
   // Remove item from cart
   removeFromCart: async (itemId) => {
     try {
-      const response = await api.delete(`/cart/items/${itemId}`);
+      const response = await api.delete(apiConfig.cartApi.removeFromCart(itemId));
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to remove item from cart');
@@ -44,7 +45,7 @@ export const cartService = {
   // Clear entire cart
   clearCart: async () => {
     try {
-      const response = await api.delete('/cart');
+      const response = await api.delete(apiConfig.cartApi.clearCart);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to clear cart');
@@ -54,7 +55,7 @@ export const cartService = {
   // Get cart summary (count, total, etc.)
   getCartSummary: async () => {
     try {
-      const response = await api.get('/cart/summary');
+      const response = await api.get(apiConfig.cartApi.getCartSummary);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch cart summary');
