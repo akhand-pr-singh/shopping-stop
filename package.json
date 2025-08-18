@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client-start\"",
-    "server": "nodemon server/server.js",
+    "server": "cd server && nodemon server.js",
     "client-start": "npm start --prefix client",
     "install-client": "npm install --prefix client",
     "build": "npm run install-client && npm run build --prefix client",
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "concurrently": "^8.2.0",
-    "nodemon": "^3.0.0",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "nodemon": "^3.0.0"
   }
 }

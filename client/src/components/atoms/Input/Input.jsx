@@ -7,8 +7,15 @@ const Input = ({
   size = 'medium',
   disabled = false,
   className = '',
+  register,        // <-- comes from react-hook-form
+  name,            // <-- required for register
+  rules = {},      // <-- validation rules
   ...props
 }) => {
+  const inputProps = register && name 
+    ? { ...register(name, rules) } // if register is provided
+    : {}; // fallback to normal input
+
   return (
     <InputWrapper className={className}>
       {label && <Label>{label}</Label>}
@@ -17,6 +24,7 @@ const Input = ({
         error={error}
         disabled={disabled}
         {...props}
+        {...inputProps}  // dynamically apply register or not
       />
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </InputWrapper>

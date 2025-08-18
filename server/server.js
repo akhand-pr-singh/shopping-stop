@@ -9,10 +9,11 @@ const path = require('path');
 dotenv.config({ path: './config.env' });
 
 const app = express();
+const clientUrl = process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : process.env.DEV_URL || 'http://localhost:3000';
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin:clientUrl,
   credentials: true
 }));
 app.use(express.json());
