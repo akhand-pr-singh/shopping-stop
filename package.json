@@ -1,17 +1,18 @@
 {
-    "name": "shopping-stop",
-    "version": "1.0.0",
-    "private": true,
-   "scripts": {
-  "start": "node server/server.js",
-  "server": "cd server && npm start",
-  "client": "cd client && npm start",
-  "build": "cd client && npm run build",
-  "postinstall": "npm run build",
-  "dev": "concurrently \"npm run server\" \"npm run client\""
-},
-    "devDependencies": {
-      "concurrently": "^8.2.2"
-    }
+  "name": "shopping-stop",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client-start\"",
+    "server": "nodemon server/server.js",
+    "client-start": "npm start --prefix client",
+    "install-client": "npm install --prefix client",
+    "build": "npm run install-client && npm run build --prefix client",
+    "postinstall": "npm run build"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.0",
+    "express": "^4.18.2"
   }
-  
+}
