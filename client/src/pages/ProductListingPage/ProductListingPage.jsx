@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import ProductListingTemplate from '../components/templates/ProductListingTemplate/ProductListingTemplate';
-import productService from '../services/productService';
-import cartService from '../services/cartService';
-import authService from '../services/authService';
+import productService from '../../services/productService';
+import cartService from '../../services/cartService';
+import authService from '../../services/authService';
+import { ProductListingTemplate } from '../../components/templates/ProductListingTemplate';
 
-const ProductListingPage = () => {
+export const ProductListingPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   
@@ -284,4 +284,4 @@ const ProductListingPage = () => {
   );
 };
 
-export default ProductListingPage;
+// export default ProductListingPage;

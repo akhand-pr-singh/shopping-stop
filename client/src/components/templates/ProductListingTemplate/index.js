@@ -1,1 +1,1 @@
-export { default } from './ProductListingTemplate';
+export {default as ProductListingTemplate} from './ProductListingTemplate';

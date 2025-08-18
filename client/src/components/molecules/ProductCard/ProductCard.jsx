@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '../../atoms/Button';
 import {
   Card,
   ImageContainer,
@@ -16,6 +15,7 @@ import {
   RatingText,
   Actions
 } from './style';
+import { Button } from '../../atoms/Button';
 
 const ProductCard = ({
   product,
@@ -84,7 +84,7 @@ const ProductCard = ({
         </RatingContainer>
 
         <Actions onClick={(e) => e.stopPropagation()}>
-          <Button 
+          <Button
             variant="primary" 
             size="small"
             onClick={() => onAddToCart(product)}
