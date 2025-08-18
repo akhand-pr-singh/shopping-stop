@@ -1,0 +1,17 @@
+{
+    "name": "shopping-stop",
+    "version": "1.0.0",
+    "private": true,
+   "scripts": {
+  "start": "node server/server.js",
+  "server": "cd server && npm start",
+  "client": "cd client && npm start",
+  "build": "cd client && npm run build",
+  "postinstall": "npm run build",
+  "dev": "concurrently \"npm run server\" \"npm run client\""
+},
+    "devDependencies": {
+      "concurrently": "^8.2.2"
+    }
+  }
+  

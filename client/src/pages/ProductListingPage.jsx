@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import ProductListingTemplate from '../components/templates/ProductListingTemplate';
+import ProductListingTemplate from '../components/templates/ProductListingTemplate/ProductListingTemplate';
 import productService from '../services/productService';
 import cartService from '../services/cartService';
 import authService from '../services/authService';
