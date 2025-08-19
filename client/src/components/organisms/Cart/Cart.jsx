@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   CartContainer,
   CartHeader,
@@ -37,7 +36,7 @@ const Cart = ({
 }) => {
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      return total + (item.price * item.quantity);
+      return total + (item.product?.price * item.quantity);
     }, 0);
   };
 
@@ -75,15 +74,15 @@ const Cart = ({
               {cartItems.map((item) => (
                 <CartItem key={item._id}>
                   <ItemImage
-                    src={item.images?.[0] || '/placeholder-product.jpg'}
-                    alt={item.name}
+                    src={item.product?.images?.[0]?.url || '/placeholder-product.jpg'}
+                    alt={item.product?.name}
                     onError={(e) => {
-                      e.target.src = '/placeholder-product.jpg';
+                      e.target.src = item.product?.images?.[0]?.url || '/placeholder-product.jpg';
                     }}
                   />
                   <ItemDetails>
-                    <ItemName>{item.name}</ItemName>
-                    <ItemPrice>${item.price.toFixed(2)}</ItemPrice>
+                    <ItemName>{item.product?.name}</ItemName>
+                    <ItemPrice>${Number(item.product?.price?.toFixed(2))}</ItemPrice>
                   </ItemDetails>
                   <ItemActions>
                     <QuantityButton
