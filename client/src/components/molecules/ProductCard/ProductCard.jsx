@@ -21,6 +21,7 @@ const ProductCard = ({
   product,
   onAddToCart,
   onViewDetails,
+  addingToCart = false,
   className = ''
 }) => {
   const {
@@ -89,8 +90,9 @@ const ProductCard = ({
             size="small"
             onClick={() => onAddToCart(product)}
             style={{ flex: 1 }}
+            disabled={addingToCart}
           >
-            Add to Cart
+            {addingToCart ? 'Adding...' : 'Add to Cart'}
           </Button>
         </Actions>
       </Content>
