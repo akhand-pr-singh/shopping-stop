@@ -1,23 +1,34 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "../../atoms/Input";
 import { Button } from "../../atoms/Button";
-import { SignInFormContainer } from "./style";
+import { AuthFormContainer } from "./style";
+import { authService } from "../../../services";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const SignInForm = ({ onForgotPassword }) => {
+const SignInForm = ({ onForgotPassword, onNewUser }) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Sign In Data:", data);
-    // Call your sign-in API here
+  const navigate = useNavigate();
+
+  const onSubmit = async(data) => {
+    try {
+      const {email, password} = data;
+      await authService.login(email, password);
+      toast.success('Logged in successfully!');
+      navigate('/products');
+    } catch (error) {
+      console.log('Error while logging in', error);
+      toast.error(error.message||'Login unsuccessful!');
+    }
   };
 
   return (
-    <SignInFormContainer>
+    <AuthFormContainer>
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Email */}
       <Input
@@ -47,8 +58,9 @@ const SignInForm = ({ onForgotPassword }) => {
         placeholder="Enter your password"
         className="form-inputs"
       />
+
       {/* Forgot Password */}
-        <Button
+        {/* <Button
           type="button"
           variant="secondary"
           size="small"
@@ -56,7 +68,7 @@ const SignInForm = ({ onForgotPassword }) => {
           className="forgot-password-button"
         >
           Forgot Password?
-        </Button>
+        </Button> */}
 
       {/* Submit */}
       <Button
@@ -68,8 +80,21 @@ const SignInForm = ({ onForgotPassword }) => {
       >
         {isSubmitting ? "Signing in..." : "Sign In"}
       </Button>
+
+        <div className="form-footer">
+        <p>Don't have an account?</p>
+        <Button
+          type="button"
+          variant="secondary"
+          size="small"
+          onClick={onNewUser}
+          className="forgot-password-button"
+        >
+          Sign Up
+        </Button>
+      </div>
     </form>
-    </SignInFormContainer>
+    </AuthFormContainer>
   );
 };
 

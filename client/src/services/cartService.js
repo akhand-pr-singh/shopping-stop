@@ -1,4 +1,4 @@
-import api from './axiosInstance';
+import {api} from './axiosInstance';
 import { apiConfig } from './apiConfig';
 
 export const cartService = {

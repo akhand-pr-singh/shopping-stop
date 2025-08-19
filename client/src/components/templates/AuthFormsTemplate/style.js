@@ -1,8 +1,14 @@
 import styled from "styled-components";
 
-export const SignInFormContainer = styled.div`
+export const AuthFormContainer = styled.div`
   .sign-in-button {
     width: 100%;
+    margin-top:10px;
+  }
+
+  .sign-up-button {
+  width:100%;
+  margin-top:10px;
   }
 
   .forgot-password-button {
@@ -21,5 +27,20 @@ export const SignInFormContainer = styled.div`
 
   .form-inputs {
   margin-top:10px;
+  }
+
+  .form-footer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+
+    button{
+    margin-left:0px;
+    }
+
+    p {
+      margin: 0;
+    }
   }
 `;

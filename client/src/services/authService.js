@@ -1,11 +1,11 @@
-import api from './axiosInstance';
+import {api, publicApi} from './axiosInstance';
 import { apiConfig } from './apiConfig';
 
 export const authService = {
   // User login
   login: async (email, password) => {
     try {
-      const response = await api.post(apiConfig.authApi.login, { email, password });
+      const response = await publicApi.post(apiConfig.authApi.login, { email, password });
       const { token, user } = response.data;
       
       // Store token and user data in localStorage
@@ -21,7 +21,7 @@ export const authService = {
   // User registration
   register: async (userData) => {
     try {
-      const response = await api.post(apiConfig.authApi.register, userData);
+      const response = await publicApi.post(apiConfig.authApi.register, userData);
       const { token, user } = response.data;
       
       // Store token and user data in localStorage
