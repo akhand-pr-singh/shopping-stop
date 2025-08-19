@@ -1,5 +1,5 @@
-import api from './axiosInstance';
 import { apiConfig } from './apiConfig';
+import { api } from './axiosInstance';
 
 export const productService = {
   // Get all products with filters and pagination

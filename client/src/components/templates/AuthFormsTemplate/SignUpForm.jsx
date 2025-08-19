@@ -2,21 +2,34 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "../../atoms/Input";
 import { Button } from "../../atoms/Button";
+import { authService } from "../../../services";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { AuthFormContainer } from "./style";
 
 
-const SignUp = () => {
+const SignUp = ({onExistingUser}) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Sign Up Data:", data);
-    // you can call your API here
+  const navigate = useNavigate();
+
+  const onSubmit = async(data) => {
+    try {
+      await authService.register(data);
+      toast.success('User created successfully!');
+      navigate('/products');
+    } catch (error) {
+      console.log('Error while signing up', error);
+      toast.error(error.message||'Sign up unsuccessful!');
+    }
   };
 
   return (
+    <AuthFormContainer>
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Name */}
       <Input
@@ -26,6 +39,7 @@ const SignUp = () => {
         rules={{ required: "Name is required" }}
         error={errors.name?.message}
         placeholder="Enter your name"
+        className="form-inputs"
       />
 
       {/* Email */}
@@ -42,6 +56,7 @@ const SignUp = () => {
         }}
         error={errors.email?.message}
         placeholder="Enter your email"
+        className="form-inputs"
       />
 
       {/* Password */}
@@ -56,6 +71,7 @@ const SignUp = () => {
         }}
         error={errors.password?.message}
         placeholder="Enter your password"
+        className="form-inputs"
       />
 
       {/* Confirm Password */}
@@ -71,6 +87,7 @@ const SignUp = () => {
         }}
         error={errors.confirmPassword?.message}
         placeholder="Confirm your password"
+        className="form-inputs"
       />
 
       {/* Submit Button */}
@@ -79,10 +96,24 @@ const SignUp = () => {
         variant="primary"
         size="medium"
         disabled={isSubmitting}
+        className="sign-up-button"
       >
         {isSubmitting ? "Signing up..." : "Sign Up"}
       </Button>
+      <div className="form-footer">
+        <p>Already have an account?</p>
+        <Button
+          type="button"
+          variant="secondary"
+          size="small"
+          onClick={onExistingUser}
+          className="forgot-password-button"
+        >
+          Login
+        </Button>
+      </div>
     </form>
+    </AuthFormContainer>
   );
 };
 
