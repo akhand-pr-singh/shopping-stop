@@ -16,6 +16,9 @@ export const ProductListingPage = () => {
   const [error, setError] = useState(null);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [addingToCartId, setAddingToCartId] = useState(null);
+  const [cartItemLoading, setCartItemLoading] = useState({ id: null, action: null });
+
   
   // State for filters and pagination
   const [filters, setFilters] = useState({
@@ -178,6 +181,7 @@ export const ProductListingPage = () => {
       return;
     }
 
+    setAddingToCartId(product._id);
     try {
       await cartService.addToCart(product._id, 1);
       await loadCart(); // Reload cart data
@@ -185,6 +189,8 @@ export const ProductListingPage = () => {
     } catch (error) {
       console.error('Failed to add to cart:', error);
       toast.error('Failed to add product to cart');
+    } finally {
+      setAddingToCartId(null);
     }
   }, [user, navigate, loadCart]);
 
@@ -201,20 +207,26 @@ export const ProductListingPage = () => {
   }, []);
 
   const handleUpdateCartQuantity = useCallback(async (itemId, quantity) => {
+    setCartItemLoading({ id: itemId, action: 'update' });
     try {
       await cartService.updateCartItem(itemId, quantity);
       await loadCart();
     } catch (error) {
       console.error('Failed to update cart quantity:', error);
+    } finally {
+      setCartItemLoading({ id: null, action: null });
     }
   }, [loadCart]);
 
   const handleRemoveCartItem = useCallback(async (itemId) => {
+    setCartItemLoading({ id: itemId, action: 'remove' });
     try {
       await cartService.removeFromCart(itemId);
       await loadCart();
     } catch (error) {
       console.error('Failed to remove cart item:', error);
+    } finally {
+      setCartItemLoading({ id: null, action: null });
     }
   }, [loadCart]);
 
@@ -253,6 +265,7 @@ export const ProductListingPage = () => {
       currentPage={currentPage}
       totalPages={totalPages}
       productsPerPage={12}
+      addingToCartId={addingToCartId}
       
       // Filter props
       filters={filters}
@@ -282,6 +295,7 @@ export const ProductListingPage = () => {
       onUpdateCartQuantity={handleUpdateCartQuantity}
       onRemoveCartItem={handleRemoveCartItem}
       onCartCheckout={handleCartCheckout}
+      cartItemLoading={cartItemLoading}
     />
   );
 };

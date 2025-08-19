@@ -48,6 +48,7 @@ const ProductListingTemplate = ({
   totalProducts = 0,
   currentPage = 1,
   totalPages = 1,
+  addingToCartId = null,
   productsPerPage = 12,
   
   // Filter props
@@ -87,6 +88,7 @@ const ProductListingTemplate = ({
   onUpdateCartQuantity,
   onRemoveCartItem,
   onCartCheckout,
+  cartItemLoading = { id: null, action: null },
   
   className = ''
 }) => {
@@ -256,6 +258,7 @@ const ProductListingTemplate = ({
             product={product}
             onAddToCart={() => onAddToCart?.(product)}
             onViewDetails={() => onViewProduct?.(product)}
+            addingToCart={addingToCartId === product._id}
           />
         ))}
       </ProductsGrid>
@@ -349,6 +352,7 @@ const ProductListingTemplate = ({
         onUpdateQuantity={onUpdateCartQuantity}
         onRemoveItem={onRemoveCartItem}
         onCheckout={onCartCheckout}
+        cartItemLoading={cartItemLoading}
       />
     </TemplateContainer>
   );

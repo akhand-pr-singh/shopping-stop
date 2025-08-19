@@ -48,7 +48,7 @@ exports.removeFromCart = async (req, res, next) => {
 
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
-    cart.items = cart.items.filter(item => item.product.toString() !== productId);
+    cart.items = cart.items.filter(item => item._id.toString() !== productId);
     await cart.save();
     res.json(cart);
   } catch (err) {
