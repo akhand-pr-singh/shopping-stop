@@ -3,7 +3,12 @@ const User = require('../models/User');
 
 // Protect routes
 exports.isAuthenticatedUser = async (req, res, next) => {
-  const { token } = req.cookies;
+   let token = '';
+
+  // Support Bearer token in Authorization header
+  if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
 
   if (!token) {
     return res.status(401).json({
@@ -12,10 +17,16 @@ exports.isAuthenticatedUser = async (req, res, next) => {
     });
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  req.user = await User.findById(decoded.id);
-
-  next();
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id);
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired token'
+    });
+  }
 };
 
 // Handling users roles
@@ -29,4 +40,4 @@ exports.authorizeRoles = (...roles) => {
     }
     next();
   };
-}; 
+};

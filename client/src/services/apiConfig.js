@@ -15,10 +15,10 @@ export const apiConfig = {
   // Cart API routes
   cartApi: {
     getCart: '/cart',
-    addToCart: '/cart/items',
-    updateCartItem: (id) => `/cart/items/${id}`,
-    removeFromCart: (id) => `/cart/items/${id}`,
-    clearCart: '/cart',
+    addToCart: '/cart/add',
+    updateCartItem: (id) => `/cart/update/${id}`,
+    removeFromCart: (id) => `/cart/remove/${id}`,
+    clearCart: '/cart/clear',
     getCartSummary: '/cart/summary',
   },
 

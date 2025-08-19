@@ -4,6 +4,7 @@ import productService from '../../services/productService';
 import cartService from '../../services/cartService';
 import authService from '../../services/authService';
 import { ProductListingTemplate } from '../../components/templates/ProductListingTemplate';
+import {toast} from 'react-toastify';
 
 export const ProductListingPage = () => {
   const navigate = useNavigate();
@@ -127,7 +128,7 @@ export const ProductListingPage = () => {
     try {
       const cartData = await cartService.getCart();
       setCartItems(cartData.items || []);
-      setCartItemCount(cartData.itemCount || 0);
+      setCartItemCount(cartData.itemsCount || 0);
     } catch (error) {
       console.error('Failed to load cart:', error);
     }
@@ -180,9 +181,10 @@ export const ProductListingPage = () => {
     try {
       await cartService.addToCart(product._id, 1);
       await loadCart(); // Reload cart data
+      toast.success('Product added to cart');
     } catch (error) {
       console.error('Failed to add to cart:', error);
-      // You might want to show a toast notification here
+      toast.error('Failed to add product to cart');
     }
   }, [user, navigate, loadCart]);
 
