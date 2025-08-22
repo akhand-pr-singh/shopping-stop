@@ -4,6 +4,7 @@ import { ProductListingPage } from './pages/ProductListingPage';
 import './App.css';
 import { AuthPage } from './pages/AuthPages';
 import ComingSoon from './pages/ComingSoon';
+import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
   return (
@@ -18,10 +19,11 @@ function App() {
 
             <Route path="/" element={<ProductListingPage />} />
             <Route path="/products" element={<ProductListingPage />} />
-            <Route path="/checkout" element={<ComingSoon />} />
+            {/* <Route path="/checkout" element={<ComingSoon />} /> */}
             <Route path="/profile" element={<ComingSoon />} />
             <Route path="/orders" element={<ComingSoon />} />
             <Route path="/products/:id" element={<ComingSoon />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             {/* Add more routes here as needed */}
         </Routes>
       </div>
