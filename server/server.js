@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const path = require('path');
 
 // Load environment variables
 dotenv.config({ path: './config.env' });
 
 const app = express();
-const clientUrl = process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : process.env.DEV_URL || 'http://localhost:3000';
+const clientUrl = process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : process.env.CLIENT_URL_DEV || 'http://localhost:3000';
 
 // Middleware
 app.use(cors({
@@ -36,6 +37,25 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/cart', require('./routes/cart'));
 app.use('/api/payment', require('./routes/payment'));
+// Stripe webhook (must use raw body!)
+app.post('/webhook', bodyParser.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['stripe-signature'];
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    console.log('✅ Payment success for user:', session.metadata.userId);
+    // 👉 Save order in DB here
+  }
+
+  res.json({ received: true });
+});
 
 // Serve frontend in production
 // if (process.env.NODE_ENV === "production") {

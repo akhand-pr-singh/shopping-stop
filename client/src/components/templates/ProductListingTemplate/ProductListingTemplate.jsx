@@ -88,6 +88,8 @@ const ProductListingTemplate = ({
   onUpdateCartQuantity,
   onRemoveCartItem,
   onCartCheckout,
+  checkoutLoading,
+  checkoutError,
   cartItemLoading = { id: null, action: null },
   
   className = ''
@@ -353,6 +355,8 @@ const ProductListingTemplate = ({
         onRemoveItem={onRemoveCartItem}
         onCheckout={onCartCheckout}
         cartItemLoading={cartItemLoading}
+        checkoutLoading={checkoutLoading}
+        checkoutError={checkoutError}
       />
     </TemplateContainer>
   );

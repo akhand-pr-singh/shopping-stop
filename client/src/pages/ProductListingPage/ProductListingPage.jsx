@@ -4,13 +4,18 @@ import productService from '../../services/productService';
 import cartService from '../../services/cartService';
 import authService from '../../services/authService';
 import { ProductListingTemplate } from '../../components/templates/ProductListingTemplate';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
+import { loadStripe } from '@stripe/stripe-js';
+import { api } from '../../services/axiosInstance';
+
+// ✅ Load Stripe outside of component render
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 export const ProductListingPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  // State for products and data
+
+  // State for products
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,8 +24,7 @@ export const ProductListingPage = () => {
   const [addingToCartId, setAddingToCartId] = useState(null);
   const [cartItemLoading, setCartItemLoading] = useState({ id: null, action: null });
 
-  
-  // State for filters and pagination
+  // Filters and pagination
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
     brand: searchParams.get('brand') || '',
@@ -31,26 +35,30 @@ export const ProductListingPage = () => {
   });
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  
-  // State for available filter options
+
+  // Categories & Brands
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
-  
-  // State for cart
+
+  // Cart state
   const [cartItems, setCartItems] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
-  // State for user
+
+  // User
   const [user, setUser] = useState(null);
 
-  // Load user data on component mount
+  // ✅ Checkout state
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+
+  // Load user
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
   }, []);
 
-  // Load categories and brands
+  // Load categories/brands
   useEffect(() => {
     const loadFilterOptions = async () => {
       try {
@@ -64,35 +72,23 @@ export const ProductListingPage = () => {
         console.error('Failed to load filter options:', error);
       }
     };
-
     loadFilterOptions();
   }, []);
 
-  // Load products based on filters, search, and pagination
+  // Load products
   const loadProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const params = {
-        page: currentPage,
-        limit: 12,
-        ...filters
-      };
-
-      // Remove empty filter values
+      const params = { page: currentPage, limit: 12, ...filters };
       Object.keys(params).forEach(key => {
-        if (params[key] === '' || params[key] === null || params[key] === undefined) {
-          delete params[key];
-        }
+        if (!params[key]) delete params[key];
       });
 
-      let response;
-      if (searchTerm) {
-        response = await productService.searchProducts(searchTerm, params);
-      } else {
-        response = await productService.getProducts(params);
-      }
+      const response = searchTerm
+        ? await productService.searchProducts(searchTerm, params)
+        : await productService.getProducts(params);
 
       setProducts(response.products || []);
       setTotalProducts(response.totalProducts || 0);
@@ -105,29 +101,24 @@ export const ProductListingPage = () => {
     }
   }, [currentPage, filters, searchTerm]);
 
-  // Load products when dependencies change
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
 
-  // Update URL search params when filters or page changes
+  // Update URL params
   useEffect(() => {
     const params = new URLSearchParams();
-    
     if (searchTerm) params.set('search', searchTerm);
     if (currentPage > 1) params.set('page', currentPage.toString());
-    
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.set(key, value);
     });
-
     setSearchParams(params);
   }, [searchTerm, currentPage, filters, setSearchParams]);
 
-  // Load cart data
+  // Load cart
   const loadCart = useCallback(async () => {
     if (!user) return;
-
     try {
       const cartData = await cartService.getCart();
       setCartItems(cartData.items || []);
@@ -137,31 +128,23 @@ export const ProductListingPage = () => {
     }
   }, [user]);
 
-  // Load cart when user changes
   useEffect(() => {
     loadCart();
   }, [loadCart]);
 
-  // Event handlers
+  // Event handlers (search, filter, sort, etc.)
   const handleSearch = useCallback((term) => {
     setSearchTerm(term);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   }, []);
 
   const handleUpdateFilters = useCallback((newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   }, []);
 
   const handleClearFilters = useCallback(() => {
-    setFilters({
-      category: '',
-      brand: '',
-      minPrice: '',
-      maxPrice: '',
-      rating: '',
-      sortBy: 'newest'
-    });
+    setFilters({ category: '', brand: '', minPrice: '', maxPrice: '', rating: '', sortBy: 'newest' });
     setCurrentPage(1);
   }, []);
 
@@ -180,11 +163,10 @@ export const ProductListingPage = () => {
       navigate('/login');
       return;
     }
-
     setAddingToCartId(product._id);
     try {
       await cartService.addToCart(product._id, 1);
-      await loadCart(); // Reload cart data
+      await loadCart();
       toast.success('Product added to cart');
     } catch (error) {
       console.error('Failed to add to cart:', error);
@@ -197,6 +179,41 @@ export const ProductListingPage = () => {
   const handleViewProduct = useCallback((product) => {
     navigate(`/products/${product._id}`);
   }, [navigate]);
+
+  // ✅ Checkout handler
+  const handleCheckout = useCallback(async () => {
+    setCheckoutLoading(true);
+    setCheckoutError('');
+
+    try {
+      const stripe = await stripePromise;
+      if (!stripe) {
+        setCheckoutError('Stripe.js failed to load');
+        setCheckoutLoading(false);
+        return;
+      }
+
+      // Convert cart items into Stripe line items
+      const res = await api.post('/payment/create-checkout-session', {
+        items: cartItems.map(item => ({
+          name: item.product.name,
+          price: item.product.price * 100, // convert to cents
+          quantity: item.quantity
+        }))
+      });
+
+      const { id: sessionId } = res.data;
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        setCheckoutError(error.message);
+      }
+    } catch (err) {
+      setCheckoutError(err.response?.data?.message || 'Something went wrong');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }, [cartItems]);
 
   const handleCartClick = useCallback(() => {
     setIsCartOpen(true);
@@ -230,10 +247,11 @@ export const ProductListingPage = () => {
     }
   }, [loadCart]);
 
+  // ✅ Updated: use checkout instead of navigate
   const handleCartCheckout = useCallback(() => {
     setIsCartOpen(false);
-    navigate('/checkout');
-  }, [navigate]);
+    handleCheckout();
+  }, [handleCheckout]);
 
   const handleLogoClick = useCallback(() => {
     navigate('/');
@@ -294,10 +312,10 @@ export const ProductListingPage = () => {
       onCartClose={handleCartClose}
       onUpdateCartQuantity={handleUpdateCartQuantity}
       onRemoveCartItem={handleRemoveCartItem}
-      onCartCheckout={handleCartCheckout}
+      onCartCheckout={handleCartCheckout} // ✅ Checkout
+      checkoutLoading={checkoutLoading}
+      checkoutError={checkoutError}
       cartItemLoading={cartItemLoading}
     />
   );
 };
-
-// export default ProductListingPage;
