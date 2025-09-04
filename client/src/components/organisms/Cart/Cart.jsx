@@ -34,6 +34,8 @@ const Cart = ({
   onRemoveItem,
   onCheckout,
   cartItemLoading = { id: null, action: null },
+  checkoutLoading = false,
+  checkoutError=null,
   className = ''
 }) => {
   const calculateTotal = () => {
@@ -146,8 +148,8 @@ const Cart = ({
               <TotalLabel>Total:</TotalLabel>
               <TotalAmount>${calculateTotal().toFixed(2)}</TotalAmount>
             </CartTotal>
-            <CheckoutButton onClick={handleCheckout}>
-              Proceed to Checkout
+            <CheckoutButton disabled={checkoutLoading}  onClick={handleCheckout}>
+              {checkoutLoading?'Redirecting...':'Proceed to Checkout'}
             </CheckoutButton>
           </CartFooter>
         )}

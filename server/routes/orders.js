@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {placeOrder, getUserOrders} = require('../controllers/orderController');
+const {placeOrder, getUserOrders, placeOrderAfterPayment} = require('../controllers/orderController');
 const auth = require('../middleware/auth');
 
 // @route   GET /api/orders
@@ -31,7 +31,7 @@ router.put('/:id', (req, res) => {
   res.json({ message: 'Update order route - to be implemented' });
 });
 
-router.post('/place', auth.isAuthenticatedUser, placeOrder);
+router.post('/place', auth.isAuthenticatedUser, placeOrderAfterPayment);
 router.get('/my', auth.isAuthenticatedUser, getUserOrders);
 
 module.exports = router;
