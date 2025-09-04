@@ -5,6 +5,7 @@ import './App.css';
 import { AuthPage } from './pages/AuthPages';
 import ComingSoon from './pages/ComingSoon';
 import CheckoutPage from './pages/CheckoutPage';
+import { OrderPlacedFailed, OrderPlacedSuccessfully } from './pages/OrderPlacedPages';
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
             <Route path="/orders" element={<ComingSoon />} />
             <Route path="/products/:id" element={<ComingSoon />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/success" element={<OrderPlacedSuccessfully/>} />
+            <Route path="/cancel" element={<OrderPlacedFailed />} />
             {/* Add more routes here as needed */}
         </Routes>
       </div>

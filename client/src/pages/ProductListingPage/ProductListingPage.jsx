@@ -197,7 +197,7 @@ export const ProductListingPage = () => {
       const res = await api.post('/payment/create-checkout-session', {
         items: cartItems.map(item => ({
           name: item.product.name,
-          price: item.product.price * 100, // convert to cents
+          price: item.product.price,
           quantity: item.quantity
         }))
       });
