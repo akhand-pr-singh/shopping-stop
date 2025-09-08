@@ -1,0 +1,16 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.primary-btn {
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--global-radius-sm);
+  padding: 8px 14px;
+  border: none;
+  box-shadow: var(--global-shadow-sm);
+}
