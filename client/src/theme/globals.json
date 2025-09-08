@@ -1,0 +1,19 @@
+{
+  "radius": {
+    "sm": "6px",
+    "md": "10px",
+    "lg": "16px"
+  },
+  "shadow": {
+    "sm": "0 1px 3px rgba(2,6,23,0.08)",
+    "md": "0 4px 6px rgba(2,6,23,0.1)",
+    "lg": "0 10px 15px rgba(2,6,23,0.15)"
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "32px"
+  }
+}

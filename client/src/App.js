@@ -6,8 +6,11 @@ import { AuthPage } from './pages/AuthPages';
 import ComingSoon from './pages/ComingSoon';
 import CheckoutPage from './pages/CheckoutPage';
 import { OrderPlacedFailed, OrderPlacedSuccessfully } from './pages/OrderPlacedPages';
+import { useTheme } from './theme/customThemeHook/useTheme';
 
 function App() {
+  const { theme, toggle } = useTheme('light');
+  
   return (
     <Router>
       <div className="App">

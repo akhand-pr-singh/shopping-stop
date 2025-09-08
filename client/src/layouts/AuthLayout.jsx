@@ -1,42 +1,40 @@
 import React, { useCallback } from "react";
-import { 
-  Container, 
-  LeftPanel, 
-  RightPanel, 
-  Title, 
-  Subtitle, 
-  Description, 
-  FormWrapper, 
-  Logo,
-  LogoText
-} from "./style";
+import { Container } from "./style";
 import { useNavigate } from "react-router-dom";
+import { useResponsive } from "../context/ResponsiveContext";
 
 const AuthLayout = ({ children }) => {
-    const navigate = useNavigate();
-    const handleLogoClick = useCallback(() => {
-        navigate('/');
-      }, [navigate]);
+  const navigate = useNavigate();
+  const handleLogoClick = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
+  const dimension = useResponsive();
+
   return (
-    <Container>
+    <Container $dimension={dimension}>
       {/* Left Section */}
-      <LeftPanel>
-      <Logo onClick={handleLogoClick}>
-          <LogoText>🛍️ ShoppingStop</LogoText>
-        </Logo>
-        <Title>WELCOME BACK</Title>
-        <Subtitle>Nice to see you again</Subtitle>
-        <Description>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </Description>
-      </LeftPanel>
+      <div className="auth_left-panel">
+        <div className="auth_left-panel_logo" onClick={handleLogoClick}>
+          <h1 className="logo-text">🛍️ ShoppingStop</h1>
+        </div>
+        <h4 className="auth_left-panel_title">WELCOME BACK</h4>
+        <h5 className="auth_left-panel_subtitle">Nice to see you again</h5>
+        <p className="auth_left-panel_description">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+      </div>
 
       {/* Right Section */}
-      <RightPanel>
-        <FormWrapper>
+      <div className="auth_right-panel">
+        <div className="auth_right-panel_logo" onClick={handleLogoClick}>
+          <h1 className="logo-text">🛍️ ShoppingStop</h1>
+        </div>
+        <form className="auth_right-panel_form-wrapper">
           {children} {/* SignInForm / SignUpForm / ResetPasswordForm */}
-        </FormWrapper>
-      </RightPanel>
+        </form>
+      </div>
     </Container>
   );
 };

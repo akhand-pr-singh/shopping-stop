@@ -1,0 +1,38 @@
+{
+  "light": {
+    "palette": {
+      "primary": "#0b5cff",
+      "primary-600": "#084bd1",
+      "secondary": "#ff6b6b",
+      "background": "#ffffff",
+      "surface": "#f6f8fb",
+      "text": "#0f1724",
+      "muted": "#6b7280",
+      "success": "#16a34a",
+      "warning": "#f59e0b",
+      "danger": "#dc2626"
+    },
+    "accent": {
+      "glass": "rgba(255,255,255,0.6)",
+      "glass-2": "rgba(11,92,255,0.06)"
+    }
+  },
+  "dark": {
+    "palette": {
+      "primary": "#7aa6ff",
+      "primary-600": "#5b8bec",
+      "secondary": "#ff8f8f",
+      "background": "#0b1220",
+      "surface": "#0f1724",
+      "text": "#e6eef9",
+      "muted": "#94a3b8",
+      "success": "#34d399",
+      "warning": "#fbbf24",
+      "danger": "#fb7185"
+    },
+    "accent": {
+      "glass": "rgba(12,18,32,0.6)",
+      "glass-2": "rgba(122,166,255,0.06)"
+    }
+  }
+}
