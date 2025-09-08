@@ -31,9 +31,9 @@ const AuthLayout = ({ children }) => {
         <div className="auth_right-panel_logo" onClick={handleLogoClick}>
           <h1 className="logo-text">🛍️ ShoppingStop</h1>
         </div>
-        <form className="auth_right-panel_form-wrapper">
+        <div className="auth_right-panel_form-wrapper">
           {children} {/* SignInForm / SignUpForm / ResetPasswordForm */}
-        </form>
+        </div>
       </div>
     </Container>
   );
