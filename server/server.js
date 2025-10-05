@@ -7,9 +7,23 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 // Load environment variables
-dotenv.config({ path: './config.env' });
+// In Vercel, environment variables are automatically loaded
+// Only use config.env for local development
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: './config.env' });
+}
 
 const app = express();
+
+// Check for required environment variables
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars);
+  process.exit(1);
+}
+
 const clientUrl = process.env.NODE_ENV === 'production' 
   ? process.env.CLIENT_URL 
   : process.env.CLIENT_URL_DEV || 'http://localhost:3000';
@@ -35,7 +49,10 @@ app.use(cookieParser());
 // ✅ Database connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB successfully'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    console.error('MongoDB URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+  });
 
 // ✅ API routes
 app.use('/api/auth', require('./routes/auth'));
